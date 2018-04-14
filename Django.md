@@ -101,6 +101,29 @@ python manage.py migrate
 ``` bash
 python manage.py shell
 ```
+...
+
+### 四、管理后台
+
+#### 创建管理员用户
+``` bash
+python manage.py createsuperuser
+
+# user: test
+# pass: qwer1234
+```
+
+#### 将应用中的数据模型注册到管理后台中
+
+如下是将Question模型注册到后台管理中：
+``` py
+from django.contrib import admin
+
+from .models import Question
+
+admin.site.register(Question)
+```
+
 
 
 
