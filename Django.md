@@ -53,8 +53,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mysite',
-        'USER': 'testuser',
-        'PASSWORD': 'testpass',
+        'USER': 'test',
+        'PASSWORD': 'jiangink',
         'HOST': '127.0.0.1'
     }
 }
@@ -124,7 +124,56 @@ from .models import Question
 admin.site.register(Question)
 ```
 
+## 第三节：视图与模板
 
+### 视图函数
+
+* 所在应用中的`views.py`中
+* 视图函数主要的返回: 返回的是一个 HttpResponse ，或者抛出一个异常。
+```
+# 通常的模板渲染方式
+from django.template import loader
+def index(request):
+    template = loader.get_template('polls/index.html') # 1. 加载模板
+    context = { 'test_data': [1,2,3,4] }    # 2. 设置上下文数据
+    return HttpResponse(template.render(context, request)) # 3. 渲染返回
+
+# 快捷的模板渲染方式 render()
+from django.shortcuts import render
+def index(request):
+    context = {'latest_question_list': latest_question_list}
+    return render(request, 'polls/index.html', context) # 模板渲染快捷方式
+
+# 通常的抛出异常方式
+from django.http import Http404
+from django.shortcuts import render
+def detail(request, question_id):
+    try:
+        question = Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        raise Http404("Question does not exist")
+    return render(request, 'polls/detail.html', {'question': question})
+
+# 快捷的抛出异常方式 get_object_or_404()
+from django.shortcuts import get_object_or_404, render
+def detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/detail.html', {'question': question})
+
+```
+* 采用`urls_name`替换模板中硬编码url
+```
+# 将原硬编码url
+<li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+# 替换为url name
+<li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+
+```
+* 为应用url添加命名空间
+```
+# 设置应用urls.py文件
+app_name = 'app name'
+```
 
 
 
